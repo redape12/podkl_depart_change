@@ -1,0 +1,8 @@
+CREATE TABLE AlexeyReport.temp_all_depart AS
+SELECT 
+    evt.ID as EVENT_ID,
+    evt.EVENT_TEXT_1
+FROM 
+    sitemanager.b_crm_event evt
+WHERE 
+    evt.EVENT_TEXT_1 LIKE '%изменил(а) время выезда%';
