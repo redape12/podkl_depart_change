@@ -1,12 +1,17 @@
+drop table if exists AlexeyReport.temp_multiple_changes;
 CREATE TABLE AlexeyReport.temp_multiple_changes AS
 SELECT 
     rel.ENTITY_ID,
-    COUNT(*) as change_count
+    1 as has_later_change
 FROM 
     sitemanager.b_crm_event_relations rel
 INNER JOIN 
-    AlexeyReport.temp_all_depart tad ON rel.EVENT_ID = tad.EVENT_ID
+    sitemanager.b_crm_event evt ON rel.EVENT_ID = evt.ID
+WHERE 
+    evt.EVENT_TEXT_1 LIKE '%изменил(а) время выезда%'
+    AND evt.EVENT_TEXT_1 LIKE '% с %'
+    AND evt.EVENT_TEXT_1 LIKE '% на %'
+    AND SUBSTRING_INDEX(SUBSTRING_INDEX(evt.EVENT_TEXT_1, ' на ', -1), '\n', 1) > 
+        SUBSTRING_INDEX(SUBSTRING_INDEX(evt.EVENT_TEXT_1, ' с ', -1), ' на ', 1)
 GROUP BY 
-    rel.ENTITY_ID
-HAVING 
-    COUNT(*) > 1;
+    rel.ENTITY_ID;
