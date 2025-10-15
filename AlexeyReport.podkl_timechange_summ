@@ -1,0 +1,15 @@
+drop table if exists AlexeyReport.podkl_timechange_summ;
+create table AlexeyReport.podkl_timechange_summ as
+SELECT 
+    p.city,
+    p.month, 
+    p.year,
+    COUNT(*) as total_count,
+    COUNT(tmc.ENTITY_ID) as later_change_count,
+    ROUND(COUNT(tmc.ENTITY_ID) * 100.0 / COUNT(*), 2) as percent_with_later_changes
+FROM AlexeyReport.podkl p
+LEFT JOIN AlexeyReport.temp_multiple_changes tmc ON p.id = tmc.ENTITY_ID
+GROUP BY 
+    p.city, p.month, p.year
+ORDER BY 
+    p.year, p.month, p.city;
