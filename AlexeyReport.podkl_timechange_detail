@@ -1,0 +1,8 @@
+drop table if exists AlexeyReport.podkl_timechange_detail;
+create table AlexeyReport.podkl_timechange_detail as
+SELECT 
+    p.*
+FROM 
+    AlexeyReport.podkl p
+INNER JOIN 
+    AlexeyReport.temp_multiple_changes tmc ON p.id = tmc.ENTITY_ID;
