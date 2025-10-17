@@ -2,7 +2,8 @@ drop table if exists AlexeyReport.temp_multiple_changes;
 CREATE TABLE AlexeyReport.temp_multiple_changes AS
 SELECT 
     rel.ENTITY_ID,
-    1 as has_later_change
+    1 as has_later_change,
+    CURDATE() as update_at
 FROM 
     sitemanager.b_crm_event_relations rel
 INNER JOIN 
