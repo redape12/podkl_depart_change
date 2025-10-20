@@ -1,8 +1,28 @@
-drop table if exists AlexeyReport.podkl_timechange_detail;
-create table AlexeyReport.podkl_timechange_detail as
+CREATE DEFINER=`myuser`@`%` PROCEDURE `podkl_timechange_detail`()
+BEGIN
+DROP TABLE IF EXISTS podkl_timechange_detail;
+CREATE TABLE podkl_timechange_detail AS
 SELECT 
-    p.*
-FROM 
-    AlexeyReport.podkl p
-INNER JOIN 
-    AlexeyReport.temp_multiple_changes tmc ON p.id = tmc.ENTITY_ID;
+    p.id, p.eldoc, p.eldoc_agr, p.eldoc_rec, p.ls, p.tp, p.TITLE, p.city, p.service, 
+    p.address, p.fl, p.cabel_lenght, p.fact_cabel_rashod, p.date0, p.date1, p.date2, 
+    p.date3, p.date4, p.slot, p.`Дата по просьбе абонента?`, p.status, p.tehnic, 
+    p.tehnic2, p.type, p.number, p.comm, p.comm2, p.comm3,
+    CASE MONTH(p.date3)
+        WHEN 1 THEN 'Январь' WHEN 2 THEN 'Февраль' WHEN 3 THEN 'Март'
+        WHEN 4 THEN 'Апрель' WHEN 5 THEN 'Май' WHEN 6 THEN 'Июнь'
+        WHEN 7 THEN 'Июль' WHEN 8 THEN 'Август' WHEN 9 THEN 'Сентябрь'
+        WHEN 10 THEN 'Октябрь' WHEN 11 THEN 'Ноябрь' WHEN 12 THEN 'Декабрь'
+    END as month,
+    YEAR(p.date3) as year,
+    tmc.change_date,
+    CASE 
+        WHEN DATE(p.date3) > DATE_ADD(DATE(tmc.change_date), INTERVAL 1 DAY) THEN 'Нет'
+        ELSE 'Да'
+    END as is_on_time,
+    CURDATE() as update_at
+FROM AlexeyReport.podkl p
+LEFT JOIN AlexeyReport.temp_multiple_changes tmc ON p.id = tmc.ENTITY_ID
+WHERE p.date3 != 'NULL' 
+  AND p.date3 IS NOT NULL
+  AND CAST(p.date3 AS CHAR) != 'NULL';
+END
